@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PPL
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.23;
 
 import {Common} from 'script/Common.sol';
