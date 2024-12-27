@@ -7,7 +7,7 @@
     "type": "git",
     "url": "git+https://github.com/defi-wonderland/solidity-foundry-boilerplate.git"
   },
-  "license": "PPL",
+  "license": "MIT",
   "author": "Breadchain, fork ofWonderland",
   "scripts": {
     "build": "forge build",
