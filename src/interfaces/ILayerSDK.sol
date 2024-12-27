@@ -1,17 +1,42 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.23;
 
-import {ILayerConsumer} from 'interfaces/ILayerConsumer.sol';
+import {ECDSAStakeRegistry} from '@eigenlayer-middleware/unaudited/ECDSAStakeRegistry.sol';
 
-interface ILayerSDK is ILayerConsumer {
+/**
+ * @title LayerSDK Contract
+ * @author Breadchain
+ * @notice LayerSDK contract to validate layer tasks from off-chain AVS operators
+ */
+interface ILayerSDK {
   /*///////////////////////////////////////////////////////////////
-                            LOGIC
+                            DATA STRUCTURES
   //////////////////////////////////////////////////////////////*/
 
   /**
-   * @notice Validates a layer task from off-chain AVS operator
-   * @param _offchainData The off-chain data to verify
-   * @return _isValid Whether the task is valid
+   * @notice The task structure
+   * @param dataHash The hash of the data to verify
+   * @param signatureData The signature(s) to verify
    */
-  function validateLayerTask(string calldata _offchainData) external view returns (bool _isValid);
+  struct Task {
+    bytes32 dataHash;
+    bytes signatureData;
+  }
+
+  /*///////////////////////////////////////////////////////////////
+                            ERRORS
+  //////////////////////////////////////////////////////////////*/
+
+  /// @notice Error thrown when the caller is not an operator
+  error NotOperator();
+
+  /*///////////////////////////////////////////////////////////////
+                            VARIABLES
+  //////////////////////////////////////////////////////////////*/
+
+  /**
+   * @notice The stake registry contract
+   * @return _stakeRegistry The stake registry address
+   */
+  function STAKE_REGISTRY() external view returns (ECDSAStakeRegistry _stakeRegistry); // solhint-disable-line func-name-mixedcase
 }

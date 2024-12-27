@@ -1,16 +1,30 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.23;
 
-import {LayerConsumer} from 'contracts/LayerConsumer.sol';
+import {ECDSAStakeRegistry} from '@eigenlayer-middleware/unaudited/ECDSAStakeRegistry.sol';
 import {ILayerSDK} from 'interfaces/ILayerSDK.sol';
 
-contract LayerSDK is LayerConsumer, ILayerSDK {
-  /// @notice Initializer
-  constructor(address _stakeRegistry) LayerConsumer(_stakeRegistry) {}
+contract LayerSDK is ILayerSDK {
+  /// @notice bytes4(keccak256("isValidSignature(bytes32,bytes)")
+  bytes4 internal constant _ERC1271_SIGNATURE = 0x1626ba7e;
 
   /// @inheritdoc ILayerSDK
-  function validateLayerTask(string calldata _offchainData) external view returns (bool _isValid) {
-    Task memory _task = Task({dataHash: bytes32(bytes(_offchainData[0:32])), signatureData: bytes(_offchainData[32:])});
-    _isValid = _validateLayerTask(_task);
+  ECDSAStakeRegistry public immutable STAKE_REGISTRY;
+
+  /**
+   * @notice Initializer
+   * @param _stakeRegistry The address of the stake registry contract
+   */
+  constructor(address _stakeRegistry) {
+    STAKE_REGISTRY = ECDSAStakeRegistry(_stakeRegistry);
+  }
+
+  /**
+   * @notice Validates a layer task from off-chain AVS operator
+   * @param _task The message and signatures to verify
+   * @return _isValid Whether the task is valid
+   */
+  function _validateLayerTask(Task memory _task) internal view returns (bool _isValid) {
+    _isValid = (_ERC1271_SIGNATURE == STAKE_REGISTRY.isValidSignature(_task.dataHash, _task.signatureData));
   }
 }
