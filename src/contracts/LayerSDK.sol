@@ -12,6 +12,15 @@ contract LayerSDK is ILayerSDK {
   ECDSAStakeRegistry public immutable STAKE_REGISTRY;
 
   /**
+   * @notice Modifier to ensure a task is valid
+   * @param _task The task to validate
+   */
+  modifier onlyValidLayerTask(Task memory _task) {
+    if (!_validateLayerTask(_task)) revert InvalidLayerTask();
+    _;
+  }
+
+  /**
    * @notice Initializer
    * @param _stakeRegistry The address of the stake registry contract
    */

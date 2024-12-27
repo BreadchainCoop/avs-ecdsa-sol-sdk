@@ -19,6 +19,9 @@ interface ILayerSDK {
     bytes signatureData;
   }
 
+  /// @notice The error thrown when a layer task is invalid
+  error InvalidLayerTask();
+
   /**
    * @notice The stake registry contract
    * @return _stakeRegistry The stake registry address
