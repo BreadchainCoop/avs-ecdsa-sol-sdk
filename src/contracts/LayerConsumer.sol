@@ -11,12 +11,6 @@ contract LayerConsumer is ILayerConsumer {
   /// @inheritdoc ILayerConsumer
   ECDSAStakeRegistry public immutable STAKE_REGISTRY;
 
-  /// @notice Enforce that the caller is an operator
-  modifier onlyOperator() {
-    if (!STAKE_REGISTRY.operatorRegistered(msg.sender)) revert NotOperator();
-    _;
-  }
-
   /**
    * @notice Initializer
    * @param _stakeRegistry The address of the stake registry contract

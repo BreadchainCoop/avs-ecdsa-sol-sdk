@@ -9,7 +9,7 @@ contract LayerSDK is LayerConsumer, ILayerSDK {
   constructor(address _stakeRegistry) LayerConsumer(_stakeRegistry) {}
 
   /// @inheritdoc ILayerSDK
-  function validateLayerTask(string calldata _offchainData) external view onlyOperator returns (bool _isValid) {
+  function validateLayerTask(string calldata _offchainData) external view returns (bool _isValid) {
     Task memory _task = Task({dataHash: bytes32(bytes(_offchainData[0:32])), signatureData: bytes(_offchainData[32:])});
     _isValid = _validateLayerTask(_task);
   }
