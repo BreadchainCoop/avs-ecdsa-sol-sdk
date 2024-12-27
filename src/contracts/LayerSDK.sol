@@ -2,12 +2,11 @@
 pragma solidity 0.8.23;
 
 import {ECDSAStakeRegistry} from '@eigenlayer-middleware/unaudited/ECDSAStakeRegistry.sol';
-
-import {ECDSAUpgradeable} from '@openzeppelin-upgrades/contracts/utils/cryptography/ECDSAUpgradeable.sol';
+import {MessageHashUtils} from '@oz/utils/cryptography/MessageHashUtils.sol';
 import {ILayerSDK} from 'interfaces/ILayerSDK.sol';
 
 contract LayerSDK is ILayerSDK {
-  using ECDSAUpgradeable for bytes32;
+  using MessageHashUtils for bytes32;
 
   /// @notice bytes4(keccak256("isValidSignature(bytes32,bytes)")
   bytes4 internal constant _ERC1271_SIGNATURE = 0x1626ba7e;
@@ -51,7 +50,7 @@ contract LayerSDK is ILayerSDK {
     bytes32 _messageHash,
     string memory _message
   ) internal pure returns (bool _isValid) {
-    bytes32 messageHash = keccak256(abi.encodePacked(_message));
-    _isValid = _messageHash == messageHash.toEthSignedMessageHash();
+    bytes32 _msgToHash = keccak256(abi.encodePacked(_message));
+    _isValid = _messageHash == _msgToHash.toEthSignedMessageHash();
   }
 }

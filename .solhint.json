@@ -2,7 +2,7 @@
   "extends": "solhint:recommended",
   "rules": {
     "compiler-version": ["warn"],
-    "quotes": "off",
+    "quotes": ["warn", "single"],
     "func-visibility": ["warn", { "ignoreConstructors": true }],
     "no-inline-assembly": "off",
     "no-empty-blocks": "off",
