@@ -9,10 +9,6 @@ import {ECDSAStakeRegistry} from '@eigenlayer-middleware/unaudited/ECDSAStakeReg
  * @notice LayerSDK contract to validate layer tasks from off-chain AVS operators
  */
 interface ILayerSDK {
-  /*///////////////////////////////////////////////////////////////
-                            DATA STRUCTURES
-  //////////////////////////////////////////////////////////////*/
-
   /**
    * @notice The task structure
    * @param dataHash The hash of the data to verify
@@ -22,17 +18,6 @@ interface ILayerSDK {
     bytes32 dataHash;
     bytes signatureData;
   }
-
-  /*///////////////////////////////////////////////////////////////
-                            ERRORS
-  //////////////////////////////////////////////////////////////*/
-
-  /// @notice Error thrown when the caller is not an operator
-  error NotOperator();
-
-  /*///////////////////////////////////////////////////////////////
-                            VARIABLES
-  //////////////////////////////////////////////////////////////*/
 
   /**
    * @notice The stake registry contract
