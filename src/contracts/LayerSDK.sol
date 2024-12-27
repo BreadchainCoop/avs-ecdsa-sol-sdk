@@ -2,9 +2,13 @@
 pragma solidity 0.8.23;
 
 import {ECDSAStakeRegistry} from '@eigenlayer-middleware/unaudited/ECDSAStakeRegistry.sol';
+
+import {ECDSAUpgradeable} from '@openzeppelin-upgrades/contracts/utils/cryptography/ECDSAUpgradeable.sol';
 import {ILayerSDK} from 'interfaces/ILayerSDK.sol';
 
 contract LayerSDK is ILayerSDK {
+  using ECDSAUpgradeable for bytes32;
+
   /// @notice bytes4(keccak256("isValidSignature(bytes32,bytes)")
   bytes4 internal constant _ERC1271_SIGNATURE = 0x1626ba7e;
 
@@ -35,5 +39,19 @@ contract LayerSDK is ILayerSDK {
    */
   function _validateLayerTask(Task memory _task) internal view returns (bool _isValid) {
     _isValid = (_ERC1271_SIGNATURE == STAKE_REGISTRY.isValidSignature(_task.dataHash, _task.signatureData));
+  }
+
+  /**
+   * @notice Validates the format of an EIP-712 signed message
+   * @param _messageHash The hash of the message
+   * @param _message The message to verify is hashed according to EIP-712
+   * @return _isValid Whether the message hash represents the message according to EIP-712
+   */
+  function _validateEthSignedMessage(
+    bytes32 _messageHash,
+    string memory _message
+  ) internal pure returns (bool _isValid) {
+    bytes32 messageHash = keccak256(abi.encodePacked(_message));
+    _isValid = _messageHash == messageHash.toEthSignedMessageHash();
   }
 }
