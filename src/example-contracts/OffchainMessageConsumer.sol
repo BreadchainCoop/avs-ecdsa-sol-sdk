@@ -11,9 +11,9 @@ contract OffchainMessageConsumer is LayerSDK {
   constructor(address _stakeRegistry) LayerSDK(_stakeRegistry) {}
 
   /**
-   * @notice Validates a layer task from off-chain AVS operator
-   * @param _task The off-chain data to verify
-   * @return _isValid Whether the task is valid
+   * @notice Validates a layer task from off-chain AVS operator and checks the message
+   * @param _task The off-chain message to verify and the encoded signature, signers and reference block
+   * @return _isValid Whether the task is valid and the message is valid
    */
   function validateOffchainMessage(ILayerSDK.Task calldata _task)
     external
