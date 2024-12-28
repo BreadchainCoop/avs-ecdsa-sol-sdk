@@ -55,6 +55,130 @@
 </dl>
 
 <div align="center">End of Breadchain Notes</div>
+
+## Architecture
+
+### Overview
+
+The AVS ECDSA SDK is built on top of EigenLayer's middleware framework and provides a secure way to validate off-chain tasks using ECDSA signatures. The system consists of several key components that work together to enable secure task validation and stake management.
+
+### System Components
+
+```mermaid
+graph TB
+    subgraph "AVS ECDSA SDK"
+        LayerSDK[LayerSDK Contract]
+        ECDSAStakeRegistry[ECDSA Stake Registry]
+        Consumers[Consumer Contracts]
+    end
+    
+    subgraph "EigenLayer Core"
+        DelegationManager[Delegation Manager]
+        StrategyManager[Strategy Manager]
+        Slasher[Slasher]
+        AVSDirectory[AVS Directory]
+    end
+    
+    LayerSDK --> ECDSAStakeRegistry
+    Consumers --> LayerSDK
+    ECDSAStakeRegistry --> DelegationManager
+    ECDSAStakeRegistry --> StrategyManager
+    DelegationManager --> Slasher
+    StrategyManager --> Slasher
+    DelegationManager --> AVSDirectory
+```
+
+### Contract Architecture
+
+```mermaid
+classDiagram
+    class ILayerSDK {
+        <<interface>>
+        +Task struct
+        +STAKE_REGISTRY() view
+        +InvalidLayerTask error
+    }
+    
+    class LayerSDK {
+        +ECDSAStakeRegistry STAKE_REGISTRY
+        +constructor(address _stakeRegistry)
+        #_validateLayerTask(Task) view
+        #_validateEthSignedMessage(bytes32, string) pure
+    }
+    
+    class OffchainMessageConsumer {
+        +constructor(address _stakeRegistry)
+        +validateOffchainMessage(Task) view
+    }
+    
+    class StorageQueryConsumer {
+        +constructor(address _stakeRegistry)
+        +storeLayerTask(Task)
+        +queryLayerTask(bytes32) view
+    }
+    
+    ILayerSDK <|.. LayerSDK
+    LayerSDK <|-- OffchainMessageConsumer
+    LayerSDK <|-- StorageQueryConsumer
+```
+
+### Task Validation Flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Consumer
+    participant LayerSDK
+    participant StakeRegistry
+    
+    Client->>Consumer: Submit Task
+    Consumer->>LayerSDK: Validate Task
+    LayerSDK->>StakeRegistry: Verify Signature
+    StakeRegistry-->>LayerSDK: Validation Result
+    LayerSDK-->>Consumer: Task Validity
+    Consumer-->>Client: Response
+```
+
+### Key Components
+
+1. **LayerSDK Contract**
+   - Base contract for AVS task validation
+   - Integrates with ECDSA Stake Registry
+   - Provides EIP-712 signature validation
+   - Implements task validation logic
+
+2. **ECDSA Stake Registry**
+   - Manages operator stakes and signatures
+   - Integrates with EigenLayer's core contracts
+   - Validates operator signatures for tasks
+   - Tracks operator participation and stakes
+
+3. **Consumer Contracts**
+   - Example implementations:
+     - OffchainMessageConsumer: Validates off-chain messages
+     - StorageQueryConsumer: Stores and queries validated tasks
+   - Inherit from LayerSDK
+   - Implement specific task validation logic
+
+
+### Example Usage
+
+```solidity
+// Deploy ECDSA Stake Registry
+ECDSAStakeRegistry stakeRegistry = new ECDSAStakeRegistry(...);
+
+// Deploy Consumer Contract
+OffchainMessageConsumer consumer = new OffchainMessageConsumer(address(stakeRegistry));
+
+// Create and Validate Task
+ILayerSDK.Task memory task = ILayerSDK.Task({
+    dataHash: messageHash,
+    signatureData: signatures
+});
+
+bool isValid = consumer.validateOffchainMessage(task);
+```
+
 <div align="center">Continue Reading Wonderland Outline</div>
 
 ## Features
